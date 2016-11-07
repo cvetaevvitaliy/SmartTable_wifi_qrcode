@@ -565,8 +565,8 @@ ARM Macro Assembler    Page 9
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\objects\startup_stm32f10x_hd.d -o.\objects\startup_stm32f10x_hd.
-o -IF:\桌牌系统\代码\SmartTable_V1.0\SmartTable_wifi_V0.1\Project\RTE -IF:\桌牌
-系统\代码\SmartTable_V1.0\SmartTable_wifi_V0.1\Project\RTE\Device\STM32F103RE -
+o -IF:\桌牌系统\代码\SmartTable_V2.0\SmartTable_wifi_V2.1\Project\RTE -IF:\桌牌
+系统\代码\SmartTable_V2.0\SmartTable_wifi_V2.1\Project\RTE\Device\STM32F103RE -
 Id:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0-Beta4\CMSIS\Include -Id:\Keil_v5\ARM\PACK\
 Keil\STM32F1xx_DFP\2.1.0\Device\Include -Id:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DF
 P\2.1.0\Device\StdPeriph_Driver\inc --predefine="__UVISION_VERSION SETA 521" --
