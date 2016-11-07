@@ -4,8 +4,11 @@
 #include "wifi_esp.h" 
 #include "wifi_esp_config.h"
 
-#define WIFI_PWR_PORT	GPIOB
-#define WIFI_PWR_PIN  	GPIO_Pin_4
+#define WIFI_RST_PORT	GPIOC
+#define WIFI_RST_PIN  	GPIO_Pin_5
+
+#define WIFI_PWR_PORT	GPIOA
+#define WIFI_PWR_PIN  	GPIO_Pin_3
 
 struct WIFI_Dev g_WifiDev;
 
@@ -16,7 +19,7 @@ struct WIFI_Dev *GetWifiDev(void)
 
 void USART3_IRQHandler(void)
 {
-	u8 ucDat;
+ 	u8 ucDat;
 	u16 temp;
     /* 中断接收*/
     if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) 
@@ -174,8 +177,8 @@ void WIFI_UART(void)
  {
 	 GPIO_InitTypeDef GPIO_InitStructure; 
 	 
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_AFIO , ENABLE );
-	//GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE); 
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC|RCC_APB2Periph_AFIO , ENABLE );
+	 
 	GPIO_PinRemapConfig(GPIO_Remap_SWJ_NoJTRST, ENABLE); // 释放pb4
 //	 // wifi rst io
 //	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_8;
@@ -193,19 +196,25 @@ void WIFI_UART(void)
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
 	 
 	GPIO_Init(WIFI_PWR_PORT,&GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin= WIFI_RST_PIN;
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
 	 
+	GPIO_Init(WIFI_RST_PORT,&GPIO_InitStructure);
+	  
 	 
 	 
 	 
  }
  void esp8266_hard_reset(void)
  {
-//	 GPIO_ResetBits(GPIOA,GPIO_Pin_8);
-//	 SysTickDelay_ms(500);
-//	 GPIO_SetBits(GPIOA,GPIO_Pin_8);
-	 GPIO_ResetBits(WIFI_PWR_PORT,WIFI_PWR_PIN);
+	 GPIO_ResetBits(WIFI_RST_PORT,WIFI_RST_PIN);
 	 SysTickDelay_ms(500);
-	 GPIO_SetBits(WIFI_PWR_PORT,WIFI_PWR_PIN);
+	 GPIO_SetBits(WIFI_RST_PORT,WIFI_RST_PIN);
+//	 GPIO_ResetBits(WIFI_PWR_PORT,WIFI_PWR_PIN);
+//	 SysTickDelay_ms(500);
+//	 GPIO_SetBits(WIFI_PWR_PORT,WIFI_PWR_PIN);
 	 
  }
  

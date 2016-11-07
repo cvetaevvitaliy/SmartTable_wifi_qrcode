@@ -3,16 +3,17 @@
 #define __SHT1X_H
 
 #include "stm32f10x.h"
-#define SHT_PORT  GPIOC
-#define SHT_SCK_PIN	  GPIO_Pin_9
-#define SHT_DAT_PIN	  GPIO_Pin_8
+#define SHT_SCK_PORT  GPIOC
+#define SHT_SCK_PIN	  GPIO_Pin_12
+#define SHT_DAT_PORT  GPIOD
+#define SHT_DAT_PIN	  GPIO_Pin_2
   
 //SHT Òý½Å¶¨Òå
-#define SHT_SCK_H()   GPIO_SetBits(SHT_PORT, SHT_SCK_PIN)
-#define SHT_SCK_L()	  GPIO_ResetBits(SHT_PORT, SHT_SCK_PIN)
-#define SHT_SDA_H()	  GPIO_SetBits(SHT_PORT, SHT_DAT_PIN)
-#define SHT_SDA_L()	  GPIO_ResetBits(SHT_PORT, SHT_DAT_PIN)
-#define SHT_READ_SDA() GPIO_ReadInputDataBit(SHT_PORT,SHT_DAT_PIN)
+#define SHT_SCK_H()   GPIO_SetBits(SHT_SCK_PORT, SHT_SCK_PIN)
+#define SHT_SCK_L()	  GPIO_ResetBits(SHT_SCK_PORT, SHT_SCK_PIN)
+#define SHT_SDA_H()	  GPIO_SetBits(SHT_DAT_PORT, SHT_DAT_PIN)
+#define SHT_SDA_L()	  GPIO_ResetBits(SHT_DAT_PORT, SHT_DAT_PIN)
+#define SHT_READ_SDA() GPIO_ReadInputDataBit(SHT_DAT_PORT,SHT_DAT_PIN)
 
 
 #define noACK 0

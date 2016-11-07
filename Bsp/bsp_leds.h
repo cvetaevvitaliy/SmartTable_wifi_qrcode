@@ -33,6 +33,7 @@
 #define LED10_PIN  			GPIO_Pin_6
 
 //#define LED9_Toggle			LED9_PORT->ODR ^= LED9_PIN
+void BspLed_IOConfig(void);
 void RedLedOn(void);
 void GreenLedOn(void);
 void RedLedOff(void);

@@ -6,7 +6,7 @@
 
 __IO u32 SysTicksVal32Bit;
 
-void SYS_DelayFunConfig(void)
+void SYS_TickDelayConfig(void)
 {
 	#if (SYS_DELAY_USE == TIMER2)
 	    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;

@@ -7,7 +7,7 @@
 #define SecondTicks 	((u16)(PDInit_GetSysTick()/2000))
 
  
-void SYS_DelayFunConfig(void); 	
+void SYS_TickDelayConfig(void); 	
 void Sys_delay_init(void);
 void Sys_delay_us(u32 nus);
 void Sys_delay_ms(u16 nms);

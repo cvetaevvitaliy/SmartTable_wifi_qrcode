@@ -12,6 +12,15 @@
 #include "sht1x.h"
 #include "usb_contrl.h"
 #include "Buttons.h"
+
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
 #define QRCODE_Y 80
 u8 	gMcuID[12];
 void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data);
@@ -24,7 +33,7 @@ int main(void)
 	RCC_Configuration();
 	GetSTM32ID((u32*)gMcuID);
 	UsbOutConfig();
-	SYS_DelayFunConfig();
+	SYS_TickDelayConfig();
 	Sys_delay_init();
 	BspLed_IOConfig();
 	ButtonsConfig();
@@ -94,4 +103,20 @@ void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data)
 			
 	}
 	 
+}
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART1 and Loop until the end of transmission */
+ 
+	USART_SendData(USART1, ch);
+	//等待发送完毕
+	while(USART_GetFlagStatus(USART1, USART_FLAG_TC)==RESET) { }
+	//返回ch
+  return ch;
 }

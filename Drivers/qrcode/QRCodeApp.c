@@ -2,8 +2,6 @@
 #include "QRCodeApp.h"  
 //二维码生成原理详见 http://coolshell.cn/articles/10590.html#jtss-tsina
 
-
-
 //P28 表9 QR码符号各版本的纠错特效
 const QR_VERSIONINFO QR_VersonInfo[] = {{0}, // Ver.0
 										 { 1, // Ver.1

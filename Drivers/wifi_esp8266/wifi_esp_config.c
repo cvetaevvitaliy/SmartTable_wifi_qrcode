@@ -40,7 +40,7 @@ u8 wifi_get_gmr(struct WIFI_Dev *dev)
 		//dev->wStatus = TCP_CONNECT_CONFIG;
 		return 0;
 	}
-	return 1;
+	 
 }
 u8 wifi_get_ap(struct WIFI_Dev *dev)
 {
@@ -57,7 +57,7 @@ u8 wifi_get_ap(struct WIFI_Dev *dev)
 		dev->wStatus = TCP_CONNECT_CONFIG;
 		return 0;
 	}
-	return 1;
+	 
 }
 //AT+ CIPAPMAC?
 u8 wifi_get_ap_mac(struct WIFI_Dev *dev)
@@ -135,7 +135,7 @@ u8 wifi_tcp_config(struct WIFI_Dev *dev)
 }
 u8 wifi_get_tcp_status(struct WIFI_Dev *dev)
 {
-	u8 tcp_status;
+//	u8 tcp_status;
 	char *strx;
 	static u16 ticks = 0;
 	//AT+CIPSTATUS
@@ -179,9 +179,9 @@ u8 wifi_tcp_send(struct WIFI_Dev *dev,u8 *dat,u16 wlength)
 {
 //	char temp[5];
 	char cmd_buf[32];
-	static u8 timeout_nums = 0;
+//	static u8 timeout_nums = 0;
 	u16  wlen_temp; 
-	uint16_t timeout = 0;
+//	uint16_t timeout = 0;
 	 
 	heartticks = 0;  // 心跳包计数置零
 	if(wlength > 2048)
@@ -208,19 +208,7 @@ u8 wifi_tcp_send(struct WIFI_Dev *dev,u8 *dat,u16 wlength)
 		}
 		
 	}
-	//	dev->SendCmd(dev,"AT+CIPSEND=\0",0,0);
-//	
-//	temp[0] = (wlen_temp / 1000) + 0x30; 
-//	wlen_temp = wlen_temp % 1000;
-//	temp[1] = (wlen_temp / 100) + 0x30; 
-//	wlen_temp = wlen_temp % 100;
-//	temp[2] = (wlen_temp / 10) + 0x30; 
-//	temp[3] = (wlen_temp % 10) + 0x30;
-//	temp[4] = '\0';
-//	dev->SendCmd(dev,(char*)temp,0,0);
-//	dev->SendCmd(dev,"\r\n\0",">",3);
-	
-	return 0;
+ 	return 0;
 	
 }
 
@@ -614,4 +602,3 @@ int MsgPackage(T_MSG_RESP *ptRespMsg,const u8 type )
 	}
 	return 0;
 }
- 

@@ -59,11 +59,11 @@ void sht_io_config(void)
 	GPIO_InitStructure.GPIO_Pin =  SHT_DAT_PIN ;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD ;//GPIO_Mode_Out_PP; //GPIO_Mode_Out_OD
-	GPIO_Init(SHT_PORT, &GPIO_InitStructure);
+	GPIO_Init(SHT_DAT_PORT, &GPIO_InitStructure);
 	 GPIO_InitStructure.GPIO_Pin =   SHT_SCK_PIN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP ;//GPIO_Mode_Out_PP; //GPIO_Mode_Out_OD
-	GPIO_Init(SHT_PORT, &GPIO_InitStructure);
+	GPIO_Init(SHT_SCK_PORT, &GPIO_InitStructure);
 	SHT_SDA_H();//sda=1;  ÆðÊ¼×´
 	SHT_IIC_DELAY;
 	SHT_SCK_H();//scl=1;
@@ -79,7 +79,7 @@ static u8 SHT_SDA_OUT(void)
 	GPIO_InitStructure.GPIO_Pin =  SHT_DAT_PIN ;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_Out_PP; //GPIO_Mode_Out_OD GPIO_Mode_Out_PP
-	GPIO_Init(SHT_PORT, &GPIO_InitStructure);
+	GPIO_Init(SHT_DAT_PORT, &GPIO_InitStructure);
 	 
  }
 static u8 SHT_SDA_IN(void)
@@ -90,7 +90,7 @@ static u8 SHT_SDA_IN(void)
 	GPIO_InitStructure.GPIO_Pin =  SHT_DAT_PIN ;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //GPIO_Mode_Out_OD  GPIO_Mode_IPU  GPIO_Mode_IN_FLOATING
-	GPIO_Init(SHT_PORT, &GPIO_InitStructure);
+	GPIO_Init(SHT_DAT_PORT, &GPIO_InitStructure);
 	
 }
 
