@@ -11,8 +11,9 @@ void bsp_led_config(void)
 void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin   ; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  
+	GPIO_InitStructure.GPIO_Pin  	= GPIO_Pin   ; 
+	GPIO_InitStructure.GPIO_Speed 	= GPIO_Speed_10MHz;
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_Out_PP;  
  	GPIO_Init(GPIOx, &GPIO_InitStructure); 
 	
 }
