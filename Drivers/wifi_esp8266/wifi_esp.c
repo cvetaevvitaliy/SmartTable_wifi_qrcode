@@ -7,9 +7,10 @@
 #define WIFI_RST_PORT	GPIOC
 #define WIFI_RST_PIN  	GPIO_Pin_5
 
-#define WIFI_PWR_PORT	GPIOA
-#define WIFI_PWR_PIN  	GPIO_Pin_3
-
+#define WIFI_PWR_PORT		GPIOA
+#define WIFI_PWR_PIN  		GPIO_Pin_3
+#define WIFI_PWR_ENABLE		GPIO_SetBits(WIFI_PWR_PORT,WIFI_PWR_PIN)
+#define WIFI_PWR_DISABLE	GPIO_ResetBits(WIFI_PWR_PORT,WIFI_PWR_PIN)
 struct WIFI_Dev g_WifiDev;
 
 struct WIFI_Dev *GetWifiDev(void)
@@ -203,7 +204,7 @@ void WIFI_UART(void)
 	 
 	GPIO_Init(WIFI_RST_PORT,&GPIO_InitStructure);
 	  
-	 
+	WIFI_PWR_ENABLE;
 	 
 	 
  }

@@ -4,25 +4,28 @@
  
 #include "stm32f10x_adc.h"  
   
-#define ADC_IOUT_PIN		 	GPIO_Pin_0
-#define ADC_BATTERY_PIN		 	GPIO_Pin_1
-#define ADC_TAG_PIN		 		GPIO_Pin_2
 
 #define AD_BUFSIZE 48
 #define M 3 
 u16 AD_Value[AD_BUFSIZE];
 u16 adc_filter[M];
 u16 gI_UsbOut;u16 gV_Battery;u16 gGas;
+u8 tgs_flag = 0;
 void sys_adc_init(void)
 {
     ADC_InitTypeDef  ADC_InitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_AFIO,ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOC| RCC_APB2Periph_AFIO,ENABLE);
     GPIO_InitStructure.GPIO_Pin  =  ADC_IOUT_PIN |ADC_BATTERY_PIN | ADC_TAG_PIN ;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOA,&GPIO_InitStructure); //
+
+	GPIO_InitStructure.GPIO_Pin  =  TGS_PLUS_PIN   ;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(TGS_PLUS_PORT,&GPIO_InitStructure); //
     RCC_ADCCLKConfig(RCC_PCLK2_Div8);
     ADC_DeInit(ADC1);
 	//ADC_StructInit(&ADC_InitStructure);  
@@ -47,6 +50,7 @@ void sys_adc_init(void)
     ADC_StartCalibration(ADC1);//开始指定ADC1的校准状态
     while(ADC_GetCalibrationStatus(ADC1)); //获取指定ADC1
 }
+
 void sys_adc_dma_config(void)
 {
     DMA_InitTypeDef DMA_InitStructure;
@@ -77,39 +81,78 @@ void sys_adc_dma_config(void)
     DMA_Cmd(DMA1_Channel1,ENABLE); //启动DMA通道?
 	ADC_SoftwareStartConvCmd(ADC1,ENABLE);
 }
- 
+
+
+//定时器 定时 扫描按键
+void TimerTGSConfig(u16 arr,u16 psc)
+{
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+	/* Enable the TIM2 gloabal Interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);	
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+
+	TIM_DeInit(TIM4);                                           //重新将Timer设置为缺省值
+
+	TIM_InternalClockConfig(TIM4);                              //采用内部时钟给TIM2提供时钟源      
+	TIM_TimeBaseStructure.TIM_Prescaler = psc;			//36000-1;               //预分频系数为36000-1，这样计数器时钟为72MHz/36000 = 2kHz       
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;     //设置时钟分割      
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; //设置计数器模式为向上计数模式       
+	TIM_TimeBaseStructure.TIM_Period = arr;             //0xffff;                  //设置计数溢出大小， 就产生一个更新事件
+	TIM_TimeBaseInit(TIM4,&TIM_TimeBaseStructure);              //将配置应用到TIM2中
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);	//清除中断标志
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);	//开中断
+	TIM_Cmd(TIM4, ENABLE);
+}
  //u16 adc_filter[3];
 
  
 //Temperature= (1.42 - ADC_Value*3.3/4096)*1000/4.35 + 25
+u16 test_tgs;
 void filter(void)
 {
 	u8 i;
 	u32  sum1 = 0;
 	u32  sum2 = 0;
 	u32  sum3 = 0;
-   for(i=0;i<(AD_BUFSIZE/3);i++)
-   {
-	   sum1 += AD_Value[3*i+0];
-	   sum2 += AD_Value[3*i+1] ;
-	   sum3 += AD_Value[3*i+2] ;
-  
-	   
-   }
-   adc_filter[0] = (u16) (sum1/(AD_BUFSIZE/3)) ;
-   adc_filter[1] = (u16) (sum2/(AD_BUFSIZE/3)) ;
-   adc_filter[2] = (u16) (sum3/(AD_BUFSIZE/3)) ;
-  gI_UsbOut = (u16)(adc_filter[0]*66*1000/4096);  // usb 输出电流 单位 mA
-   gV_Battery = (u16)(adc_filter[1]*33*(75+49.9)/(4096*49.9));   // 电池电压  0.1V
-   gGas  = (u16)((4096/adc_filter[2])*100);
- //  Temperature = (1.42 - adc_filter[1]*3.3/4096)*1000/4.35 + 25;
-//   adc_filter[2] = (u16) (sum3/(AD_BUFSIZE));
-   
+
+	for(i=0;i<(AD_BUFSIZE/3);i++)
+	{
+		sum1 += AD_Value[3*i+0];
+		sum2 += AD_Value[3*i+1] ;
+		// sum3 += AD_Value[3*i+2] ;
+
+
+	}
+	if(tgs_flag)
+	{
+		test_tgs = AD_Value[AD_BUFSIZE-1];
+//		for(i=0;i<(AD_BUFSIZE/3);i++)
+//		{
+//			sum3 += AD_Value[3*i+2] ;
+//		}  
+	}
+	adc_filter[0] = (u16) (sum1/(AD_BUFSIZE/3)) ;
+	adc_filter[1] = (u16) (sum2/(AD_BUFSIZE/3)) ;
+	adc_filter[2] = (u16) (sum3/(AD_BUFSIZE/3)) ;
+	gI_UsbOut = (u16)(adc_filter[0]*66*1000/4096);  // usb 输出电流 单位 mA
+	gV_Battery = (u16)(adc_filter[1]*33*(75+49.9)/(4096*49.9));   // 电池电压  0.1V
+	gGas  = (u16)(4096*100/test_tgs);
+	//  Temperature = (1.42 - adc_filter[1]*3.3/4096)*1000/4.35 + 25;
+	//   adc_filter[2] = (u16) (sum3/(AD_BUFSIZE));
+
 }
 void bsp_adc_config(void)
 {
 	sys_adc_init();
 	sys_adc_dma_config();
+	TimerTGSConfig(50,1439);  //1ms 中断
 }
 u16 CurrDataCounterEnd = 0;
 void DMA1_Channel1_IRQHandler(void)
@@ -125,3 +168,26 @@ void DMA1_Channel1_IRQHandler(void)
 	}
 }
  
+void TIM4_IRQHandler(void)
+{
+	static u16 tgs_ticks = 0;
+	
+	if(TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET ) /*检查TIM4更新中断发生与否*/
+    {
+		tgs_ticks++;
+		if(tgs_ticks > 997)
+		{
+			tgs_flag = 1;
+			TGS_PLUS_ENABLE;
+		}
+		if(tgs_ticks == 1000)
+		{
+			tgs_ticks = 0;
+			TGS_PLUS_DISABLE;
+			tgs_flag = 0;
+		}
+		
+        TIM_ClearITPendingBit(TIM4, TIM_IT_Update); /*清除TIMx更新中断标志 */
+	}	 
+	
+}

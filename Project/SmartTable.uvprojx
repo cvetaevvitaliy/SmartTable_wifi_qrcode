@@ -51,7 +51,7 @@
           <OutputName>SmartTable</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Common;..\Drivers\include;..\Bsp;..\STM32F10x_StdPeriph_Driver\inc;..\Drivers\OLED;..\Drivers\qrcode;..\Drivers\wifi_esp8266;.\RTE\Device\STM32F103RE;..\Drivers\adc</IncludePath>
+              <IncludePath>..\Common;..\Drivers\include;..\Bsp;..\STM32F10x_StdPeriph_Driver\inc;..\Drivers\qrcode;..\Drivers\wifi_esp8266;.\RTE\Device\STM32F103RE;..\Drivers\adc;..\Drivers\TFTLCD</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -428,51 +428,6 @@
               <FileName>usb_contrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\usb_contrl.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Driver</GroupName>
-          <Files>
-            <File>
-              <FileName>oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\OLED\oled.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys_adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\adc\sys_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>sht1x.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\sht1x\sht1x.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>esp_wifi</GroupName>
-          <Files>
-            <File>
-              <FileName>wifi_esp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\wifi_esp8266\wifi_esp.c</FilePath>
-            </File>
-            <File>
-              <FileName>wifi_esp_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\wifi_esp8266\wifi_esp_config.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Common</GroupName>
-          <Files>
-            <File>
-              <FileName>encryption.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Common\encryption.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -583,6 +538,61 @@
               <FileName>split.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libqrencode\split.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Driver</GroupName>
+          <Files>
+            <File>
+              <FileName>sys_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\adc\sys_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>sht1x.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\sht1x\sht1x.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\TFTLCD\GUI.c</FilePath>
+            </File>
+            <File>
+              <FileName>Lcd_Driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\TFTLCD\Lcd_Driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>QDTFT_demo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\TFTLCD\QDTFT_demo.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>esp_wifi</GroupName>
+          <Files>
+            <File>
+              <FileName>wifi_esp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\wifi_esp8266\wifi_esp.c</FilePath>
+            </File>
+            <File>
+              <FileName>wifi_esp_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\wifi_esp8266\wifi_esp_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common</GroupName>
+          <Files>
+            <File>
+              <FileName>encryption.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Common\encryption.c</FilePath>
             </File>
           </Files>
         </Group>

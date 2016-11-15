@@ -33,33 +33,6 @@
  
  
 //#define CC1101_SURPORT 1
-#define LED_TOGGLE				GPIOB->ODR ^= GPIO_Pin_0
-#define LED_ON					GPIO_ResetBits(GPIOB,GPIO_Pin_0)
-#define LED_OFF					GPIO_SetBits(GPIOB,GPIO_Pin_0)
-
- #define D1_RGB_R_ON 			GPIO_ResetBits(GPIOB,GPIO_Pin_5);GPIO_SetBits(GPIOB,GPIO_Pin_6);GPIO_SetBits(GPIOB,GPIO_Pin_7)
- #define D2_RGB_R_ON			GPIO_ResetBits(GPIOB,GPIO_Pin_13);GPIO_SetBits(GPIOB,GPIO_Pin_14);GPIO_SetBits(GPIOB,GPIO_Pin_15)
- #define D3_RGB_R_ON			GPIO_ResetBits(GPIOA,GPIO_Pin_2);GPIO_SetBits(GPIOA,GPIO_Pin_3);GPIO_SetBits(GPIOA,GPIO_Pin_4)
- #define D4_RGB_R_ON			GPIO_ResetBits(GPIOA,GPIO_Pin_5);GPIO_SetBits(GPIOA,GPIO_Pin_6);GPIO_SetBits(GPIOA,GPIO_Pin_7)
-
- 
- #define D1_RGB_G_ON			GPIO_ResetBits(GPIOB,GPIO_Pin_6);GPIO_SetBits(GPIOB,GPIO_Pin_5);GPIO_SetBits(GPIOB,GPIO_Pin_7)
- #define D2_RGB_G_ON			GPIO_ResetBits(GPIOB,GPIO_Pin_14);GPIO_SetBits(GPIOB,GPIO_Pin_13);GPIO_SetBits(GPIOB,GPIO_Pin_15)
- #define D3_RGB_G_ON			GPIO_ResetBits(GPIOA,GPIO_Pin_3);GPIO_SetBits(GPIOA,GPIO_Pin_2);GPIO_SetBits(GPIOA,GPIO_Pin_4)
- #define D4_RGB_G_ON			GPIO_ResetBits(GPIOA,GPIO_Pin_6);GPIO_SetBits(GPIOA,GPIO_Pin_5);GPIO_SetBits(GPIOA,GPIO_Pin_7)
-
- 
- #define D1_RGB_B_ON			GPIO_ResetBits(GPIOB,GPIO_Pin_7);GPIO_SetBits(GPIOB,GPIO_Pin_6);GPIO_SetBits(GPIOB,GPIO_Pin_5)
- #define D2_RGB_B_ON			GPIO_ResetBits(GPIOB,GPIO_Pin_15);GPIO_SetBits(GPIOB,GPIO_Pin_13);GPIO_SetBits(GPIOB,GPIO_Pin_14)
- #define D3_RGB_B_ON			GPIO_ResetBits(GPIOA,GPIO_Pin_4);GPIO_SetBits(GPIOA,GPIO_Pin_2);GPIO_SetBits(GPIOA,GPIO_Pin_3)
- #define D4_RGB_B_ON		 	GPIO_ResetBits(GPIOA,GPIO_Pin_7);GPIO_SetBits(GPIOA,GPIO_Pin_5);GPIO_SetBits(GPIOA,GPIO_Pin_6)
- 
- 
- 
- #define D1_RGB_ALL_OFF			GPIO_SetBits(GPIOB,GPIO_Pin_7);GPIO_SetBits(GPIOB,GPIO_Pin_6);GPIO_SetBits(GPIOB,GPIO_Pin_5)
- #define D2_RGB_ALL_OFF			GPIO_SetBits(GPIOB,GPIO_Pin_15);GPIO_SetBits(GPIOB,GPIO_Pin_13);GPIO_SetBits(GPIOB,GPIO_Pin_14)
- #define D3_RGB_ALL_OFF			GPIO_SetBits(GPIOA,GPIO_Pin_4);GPIO_SetBits(GPIOA,GPIO_Pin_2);GPIO_SetBits(GPIOA,GPIO_Pin_3)
- #define D4_RGB_ALL_OFF			GPIO_SetBits(GPIOA,GPIO_Pin_6);GPIO_SetBits(GPIOA,GPIO_Pin_7);GPIO_SetBits(GPIOA,GPIO_Pin_5)
  
  
  #define USB_OUT_POWER_ON   	GPIO_SetBits(GPIOA,GPIO_Pin_0)

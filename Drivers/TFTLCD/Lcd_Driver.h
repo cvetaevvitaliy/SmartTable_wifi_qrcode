@@ -30,19 +30,24 @@
 //#define LCD_CS_SET(x) LCD_CTRL->ODR=(LCD_CTRL->ODR&~LCD_CS)|(x ? LCD_CS:0)
 
 //Òº¾§¿ØÖÆ¿ÚÖÃ1²Ù×÷Óï¾äºê¶¨Òå
-#define	LCD_CS_SET  	LCD_CTRL->BSRR=LCD_CS    
-#define	LCD_RS_SET  	LCD_CTRL->BSRR=LCD_RS    
+#define	LCD_CS_SET  	LCD_CTRL->BSRR=LCD_CS     
 #define	LCD_SDA_SET  	LCD_CTRL->BSRR=LCD_SDA    
-#define	LCD_SCL_SET  	LCD_CTRL->BSRR=LCD_SCL    
-#define	LCD_RST_SET  	LCD_RST_PROT->BSRR=LCD_RST    
+#define	LCD_SCL_SET  	LCD_CTRL->BSRR=LCD_SCL 
+
+
+#define	LCD_RST_SET  	LCD_RST_PROT->BSRR=LCD_RST 
+#define	LCD_RS_SET  	LCD_RST_PROT->BSRR=LCD_RS 
+
 #define	LCD_LED_SET  	LCD_LED_PORT->BSRR=LCD_LED
 
 //Òº¾§¿ØÖÆ¿ÚÖÃ0²Ù×÷Óï¾äºê¶¨Òå
 #define	LCD_CS_CLR  	LCD_CTRL->BRR=LCD_CS
-#define	LCD_RS_CLR  	LCD_CTRL->BRR=LCD_RS
 #define	LCD_SDA_CLR  	LCD_CTRL->BRR=LCD_SDA
 #define	LCD_SCL_CLR  	LCD_CTRL->BRR=LCD_SCL
+
 #define	LCD_RST_CLR  	LCD_RST_PROT->BRR=LCD_RST
+#define	LCD_RS_CLR  	LCD_RST_PROT->BRR=LCD_RS
+
 #define	LCD_LED_CLR  	LCD_LED_PORT->BRR=LCD_LED
 
 

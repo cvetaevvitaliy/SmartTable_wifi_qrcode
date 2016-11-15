@@ -50,23 +50,23 @@ void  SPI_WriteData(u8 Data)
 	for(i=8;i>0;i--)
 	{
 		if(Data&0x80)	
-	  LCD_SDA_SET; //输出数据
-      else LCD_SDA_CLR;
-	   
-      LCD_SCL_CLR;       
-      LCD_SCL_SET;
-      Data<<=1; 
+			LCD_SDA_SET; //输出数据
+		else 
+			LCD_SDA_CLR;
+		LCD_SCL_CLR;       
+		LCD_SCL_SET;
+		Data<<=1; 
 	}
 }
 
 //向液晶屏写一个8位指令
 void Lcd_WriteIndex(u8 Index)
 {
-   //SPI 写命令时序开始
-   LCD_CS_CLR;
-   LCD_RS_CLR;
-	 SPI_WriteData(Index);
-   LCD_CS_SET;
+	//SPI 写命令时序开始
+	LCD_CS_CLR;
+	LCD_RS_CLR;
+	SPI_WriteData(Index);
+	LCD_CS_SET;
 }
 
 //向液晶屏写一个8位数据
@@ -90,7 +90,7 @@ void LCD_WriteData_16Bit(u16 Data)
 void Lcd_WriteReg(u8 Index,u8 Data)
 {
 	Lcd_WriteIndex(Index);
-  Lcd_WriteData(Data);
+	Lcd_WriteData(Data);
 }
 
 void Lcd_Reset(void)
@@ -108,7 +108,7 @@ void Lcd_Init(void)
 	Lcd_Reset(); //Reset before LCD Init.
 
 	//LCD Init For 1.44Inch LCD Panel with ST7735R.
-	Lcd_WriteIndex(0x11);//Sleep exit 
+ 	Lcd_WriteIndex(0x11);//Sleep exit 
 	Sys_delay_ms(120);
 		
 	//ST7735R Frame Rate
@@ -216,7 +216,9 @@ void Lcd_Init(void)
 	Lcd_WriteData(0x05); 
 	
 	
-	Lcd_WriteIndex(0x29);//Display on	 
+	Lcd_WriteIndex(0x29);//Display on
+	LCD_LED_SET;
+
 }
 
 

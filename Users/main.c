@@ -23,26 +23,37 @@
 
 #define QRCODE_Y 80
 u8 	gMcuID[12];
-void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data);
 u16 Humi;
 s16 Temp;
+u8 lcd_page = 0;
+
+void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data);
+void DISPLAY_Temp(void);
+
 
 int main(void)
 {
+	static u8 old_lcd_page = 0;
+	u8 page_ticks = 0;
 	u32 WifiCheckTicks = 0;
 	RCC_Configuration();
 	GetSTM32ID((u32*)gMcuID);
-	UsbOutConfig();
+	
+	 
 	SYS_TickDelayConfig();
 	Sys_delay_init();
+	
+	
+
 	BspLed_IOConfig();
 	ButtonsConfig();
 	bsp_adc_config();
 	sht_io_config();	
 	Wifi_Init();
 	
-	 
-	DISPLAY_RENCODE_TO_TFT("1234567890122456");
+	SysTickDelay_ms(2000);
+	Lcd_Init();
+	DISPLAY_Temp( );
 	UsbOutConfig();
 	while(1)
 	{
@@ -51,10 +62,36 @@ int main(void)
 		{ 
 			WifiCheckTicks  = SecondTicks; 
 			wifi_fsm();
+			//DISPLAY_RENCODE_TO_TFT("1234567890122456");
+			 
 		}
 		AllLedsRun();
 		Get_SHT11(&Humi,&Temp);
+		 
 		SysTickDelay_ms(1000);
+		if(old_lcd_page != lcd_page)
+		{
+			old_lcd_page = lcd_page;
+			switch(lcd_page)
+			{
+				case 0:
+					DISPLAY_RENCODE_TO_TFT("www.baidu.com");
+					break;
+				case 1:
+					DISPLAY_Temp( );
+					break;
+				default:
+					break;
+			}
+		}
+		else
+		{
+			page_ticks++;
+			if((page_ticks & 0x7F) == 0)
+			{
+				DISPLAY_Temp();
+			}
+		}
 		//DISPLAY_RENCODE_TO_TFT("123");
 	}
 }
@@ -80,12 +117,12 @@ void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data)
 	}
 	for(i=0;i<10;i++)
 	{
-		if((m_nSymbleSize*i*2)>240)	break;
+		if((m_nSymbleSize*i*2)>128)	break;
 	}
 	p=(i-1)*2;//点大小
 	//p = 3;
 	x=(128-m_nSymbleSize*p)/2;
-	y=QRCODE_Y;
+	y=0;
 	sprintf((char*)qrencode_buff,"piont:%d",p);//将LCD ID打印到lcd_id数组。
 	//LCD_ShowString(10,60,200,16,16,qrencode_buff);
 	//OLED_ShowString(10,60,qrencode_buff,12); 
@@ -103,6 +140,16 @@ void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data)
 			
 	}
 	 
+}
+void DISPLAY_Temp(void)
+{
+	u8 buff[32];
+	sprintf((char*)buff,"tempture:%d",Temp);
+	Lcd_Clear(GRAY0);
+
+	Gui_DrawFont_GBK16(16,10,BLUE,GRAY0, buff);
+	sprintf((char*)buff,"humidity:%d",Humi);	
+	Gui_DrawFont_GBK16(16,42,BLUE,GRAY0, buff);
 }
 /**
   * @brief  Retargets the C library printf function to the USART.

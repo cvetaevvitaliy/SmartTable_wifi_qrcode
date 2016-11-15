@@ -5,7 +5,7 @@
 //修改日期:2015/11/05
 //版本：V1.0
 //版权
-//作者：
+//作者：zzr
 /************************************/
 #include "stm32f10x.h"
 #include <stdio.h>
@@ -71,13 +71,13 @@ const u8 auchCRCLow[] =  {
 * Function:                   
 * Description:                 
 * Input:                      
-* Return:  CRC16[0] = uchCRCHi 高字节
-	CRC16[1] = uchCRCLo 低字节  
+* Return:  	CRC16[0] = uchCRCHi 高字节
+			CRC16[1] = uchCRCLo 低字节  
 ***************************************************************/
 uint8_t CRC16(uint8_t* puchMsg,uint16_t DataLen,uint8_t CRC16[2])
 {
 	uint8_t uchCRCHi = 0xFF;
-  uint8_t uchCRCLo = 0xFF;
+	uint8_t uchCRCLo = 0xFF;
 	uint16_t index = 0;
 	if (puchMsg == NULL || CRC16 == NULL || DataLen < 1) return 0;
 	while(DataLen--)
@@ -85,7 +85,7 @@ uint8_t CRC16(uint8_t* puchMsg,uint16_t DataLen,uint8_t CRC16[2])
 		index = uchCRCHi ^ (*puchMsg++);
 		uchCRCHi = uchCRCLo ^ auchCRCHigh[index];
 		uchCRCLo = auchCRCLow[index];
-  }
+	}
 	
 	CRC16[1] = uchCRCHi;
 	CRC16[0] = uchCRCLo;

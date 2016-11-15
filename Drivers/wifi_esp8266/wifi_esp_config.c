@@ -100,7 +100,9 @@ u8 wifi_tcp_config(struct WIFI_Dev *dev)
 	
 	static u8 err_times = 0;
 	//AT+CIPSTART="TCP","192.168.101.110",1000  www.lorytech.com  lorytest.lorytech.com  117.88.2.42  7903
-	if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"lorytest.lorytech.com\",7903\r\n\0","CONNECT",5) == 0)
+	//http://www.lorytech.com
+	//if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"lorytest.lorytech.com\",7903\r\n\0","CONNECT",5) == 0)
+	if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"www.lorytech.com\",7951\r\n\0","CONNECT",5) == 0)
 	{
 		// 连接成功
 		dev->wStatus = TCP_CONNECT_OK;
@@ -471,9 +473,11 @@ int DealMsg(T_MSG *msg)
 			break;
 		case OPEN_USB_OUTPUT:
 			USB_OUT_POWER_ON;
+			UsbOutContrl(1);
 			break;
 		case CLOSE_USB_OUTPUT:
 			USB_OUT_POWER_OFF; 
+			UsbOutContrl(0);
 			break;
 		case CHECKOUT:
 			D1_RGB_G_ON;

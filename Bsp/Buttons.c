@@ -487,17 +487,20 @@ void ButtonsConfig(void)
 
 void TIM3_IRQHandler(void)
 {
+	 
 	struct  WIFI_Dev *pWifiDev = GetWifiDev();
 	
 	 if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET ) /*检查TIM3更新中断发生与否*/
     {
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update); /*清除TIMx更新中断标志 */
+		 
         gButtonIOdat = GPIO_ReadInputData(BUTTON_UP_PORT) & 0x0f;
 		//KeyScan(io_dat);
 		gtButtonUp.KeyState		= key_up_read();
 		gtButtonDown.KeyState	= key_down_read();
 		gtButtonLeft.KeyState	= key_left_read();
 		gtButtonRight.KeyState	= key_right_read();
+		
 		switch(gtButtonUp.KeyState)
 		{
 			case N_key:
