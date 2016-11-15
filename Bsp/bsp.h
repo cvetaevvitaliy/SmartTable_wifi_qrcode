@@ -35,9 +35,6 @@
 //#define CC1101_SURPORT 1
  
  
- #define USB_OUT_POWER_ON   	GPIO_SetBits(GPIOA,GPIO_Pin_0)
- #define USB_OUT_POWER_OFF   	GPIO_ResetBits(GPIOA,GPIO_Pin_0)
-
 //#define ENBALE_GAS_POWER    	GPIO_SetBits(GPIOA,GPIO_Pin_3)
 //#define DISABLE_GAS_POWER    	GPIO_ResetBits(GPIOA,GPIO_Pin_3)
 

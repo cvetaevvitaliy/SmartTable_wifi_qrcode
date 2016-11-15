@@ -472,15 +472,15 @@ int DealMsg(T_MSG *msg)
 			pDev->ResetDev(pDev,0);
 			break;
 		case OPEN_USB_OUTPUT:
-			USB_OUT_POWER_ON;
+			 
 			UsbOutContrl(1);
 			break;
 		case CLOSE_USB_OUTPUT:
-			USB_OUT_POWER_OFF; 
+			 
 			UsbOutContrl(0);
 			break;
 		case CHECKOUT:
-			D1_RGB_G_ON;
+			 
 			gDeviceStaDataUp.CallSta = 2;
 			break;
 		case DEVICEID_INQUIRE:
