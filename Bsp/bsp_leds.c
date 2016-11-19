@@ -41,7 +41,8 @@ void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 	 GPIO_ResetBits( LED2_PORT,	LED2_PIN );
 	 GPIO_ResetBits( LED3_PORT,	LED3_PIN );
 	 GPIO_ResetBits( LED4_PORT,	LED4_PIN );
-	 GPIO_ResetBits( LED5_PORT,	LED5_PIN ); 
+	 GPIO_ResetBits( LED10_PORT,	LED10_PIN );
+	 
 	 
  }
   void GreenLedOn(void)
@@ -50,7 +51,8 @@ void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 	 GPIO_ResetBits( LED7_PORT,	LED7_PIN );
 	 GPIO_ResetBits( LED8_PORT,	LED8_PIN );
 	 GPIO_ResetBits( LED9_PORT,	LED9_PIN );
-	 GPIO_ResetBits( LED10_PORT,	LED10_PIN );
+
+	 GPIO_ResetBits( LED5_PORT,	LED5_PIN ); 
  }
   void RedLedOff(void)
  {
@@ -58,7 +60,9 @@ void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 	 GPIO_SetBits( LED2_PORT,	LED2_PIN );
 	 GPIO_SetBits( LED3_PORT,	LED3_PIN );
 	 GPIO_SetBits( LED4_PORT,	LED4_PIN );
-	 GPIO_SetBits( LED5_PORT,	LED5_PIN );
+
+ 	 GPIO_SetBits( LED10_PORT,	LED10_PIN );
+
  }
   void GreenLedOff(void)
  {
@@ -66,7 +70,8 @@ void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 	 GPIO_SetBits( LED7_PORT,	LED7_PIN );
 	 GPIO_SetBits( LED8_PORT,	LED8_PIN );
 	 GPIO_SetBits( LED9_PORT,	LED9_PIN );
-	 GPIO_SetBits( LED10_PORT,	LED10_PIN );
+
+	 GPIO_SetBits( LED5_PORT,	LED5_PIN );
  }
  void RedLedToggle(void)
  {
@@ -74,11 +79,12 @@ void GpioConfig(GPIO_TypeDef* GPIOx ,uint16_t GPIO_Pin)
 	 LED2_PORT->ODR ^= LED2_PIN;
 	 LED3_PORT->ODR ^= LED3_PIN;
 	 LED4_PORT->ODR ^= LED4_PIN;
-	 LED5_PORT->ODR ^= LED5_PIN;
+	 LED10_PORT->ODR ^= LED10_PIN;
+	
  }
  void GreenLedToggle(void)
  {
-	 LED10_PORT->ODR ^= LED10_PIN;
+	  LED5_PORT->ODR ^= LED5_PIN;
 	 LED6_PORT->ODR ^= LED6_PIN;
 	 LED7_PORT->ODR ^= LED7_PIN;
 	 LED8_PORT->ODR ^= LED8_PIN;

@@ -16,7 +16,7 @@ typedef struct
 }WORKPARA_STRUCT;
 
 //xl 768kflash 0xc0000 
-#define CONFIGDATAADDR   0x080BF000 //hd产品flash  最后一页
+#define CONFIGDATAADDR   0x080BF000  //hd产品flash  最后一页
 
 //使用内部Flash ISP 需开启内部高速晶振
 
@@ -24,17 +24,10 @@ typedef struct
  typedef struct  //注意结构体字节对齐 
 {
 	char	   	GPRSSeverAddr[32];
-	uint8_t		SensorState[16];
+	char 		ssid[32];
+	char 		ssid_pwd[64];
+	char 		WifiMac[18];
 
-	uint8_t 	ucSampSwitch;	
-	uint8_t 	ucBLEmode;
-	uint8_t    	ucGPRS_Switch;
-	uint8_t   	ucDataUpmode;
-	
-	uint8_t 	ucSampletime; 
-	uint8_t     backup;
-	uint8_t   	DeviceID[2];//
-	
 	uint8_t 	VerPCB;
 	uint8_t		VerSystem;
 	uint8_t		backup1;

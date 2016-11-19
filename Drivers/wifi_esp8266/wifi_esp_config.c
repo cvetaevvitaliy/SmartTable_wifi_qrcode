@@ -2,18 +2,22 @@
 #include "sys_tick_delay.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "bsp.h"
 #include "Buttons.h"
 #include "bsp_leds.h"
+#include "usb_contrl.h"
+#include "msg.h"
 T_DATA_UP gDeviceStaDataUp;
 u8 SSID[32];
 u8 ssid_pwd[64];
 char gWifi_mac[18];
-  u16 heartticks = 0;
- extern u8 gLedStatus ;
- extern u32  gSysKeyState ; 
- extern int atoi(const char * s);
- extern u8 	gMcuID[12];
+static u16 heartticks = 0;
+static u16 firstsendflag = 0;
+extern u8 	gMcuID[12];
+//extern int atoi(const char * s);
+
+
 u8 wifi_quit_ap(struct WIFI_Dev *dev)
 {
 	return 0;
@@ -32,7 +36,7 @@ u8 wifi_get_gmr(struct WIFI_Dev *dev)
 	{
 		// 成功连入 ap
 		//dev->wStatus = WIFI_CHECK_AP;
-		//setbit(gLedStatus,BATTERY_LOW);
+		 
 		return 1;
 	}
 	else
@@ -44,12 +48,28 @@ u8 wifi_get_gmr(struct WIFI_Dev *dev)
 }
 u8 wifi_get_ap(struct WIFI_Dev *dev)
 {
+	char strbuf[128];
 	//AT+CWJAP?
 	if(dev->SendCmd(dev,"AT+CWJAP?\r\n\0","No AP",3) == 0)
 	{
-		// 成功连入 ap
-		dev->wStatus = WIFI_CHECK_AP;
-		//setbit(gLedStatus,BATTERY_LOW);
+		//  连入 ap
+		//AT+ CWJAP =<ssid>,< password>
+		if(strlen((char*)SSID) > 0)
+		{
+			//sprintf(strbuf,"AT+CWJAP=\"s%\",\"s%\"",SSID,ssid_pwd);
+			strcat(strbuf,"AT+CWJAP=\"");
+			strcat(strbuf, (char*)SSID);
+			strcat(strbuf, "\",\"");
+			strcat(strbuf, (char*)ssid_pwd);
+			strcat(strbuf,"\"");
+			if(dev->SendCmd(dev,strbuf,"OK",3) == 0)
+			{
+				dev->wStatus = TCP_CONNECT_CONFIG;
+				return 0;
+			}
+		}
+		else
+			dev->wStatus = WIFI_CHECK_AP;		 
 		return 1;
 	}
 	else
@@ -101,8 +121,8 @@ u8 wifi_tcp_config(struct WIFI_Dev *dev)
 	static u8 err_times = 0;
 	//AT+CIPSTART="TCP","192.168.101.110",1000  www.lorytech.com  lorytest.lorytech.com  117.88.2.42  7903
 	//http://www.lorytech.com
-	//if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"lorytest.lorytech.com\",7903\r\n\0","CONNECT",5) == 0)
-	if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"www.lorytech.com\",7951\r\n\0","CONNECT",5) == 0)
+	if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"lorytest.lorytech.com\",7903\r\n\0","CONNECT",5) == 0)
+	//if(dev->SendCmd(dev,"AT+CIPSTART=\"TCP\",\"www.lorytech.com\",7951\r\n\0","CONNECT",5) == 0)
 	{
 		// 连接成功
 		dev->wStatus = TCP_CONNECT_OK;
@@ -117,7 +137,7 @@ u8 wifi_tcp_config(struct WIFI_Dev *dev)
 		{
 			err_times = 0;
 			dev->wStatus = TCP_CONNECT_OK;
-			//gLedStatus = NORMAL_WORKING;
+			 
 			return 0;
 		}
 		else
@@ -227,6 +247,9 @@ u8 wifi_tcp_send(struct WIFI_Dev *dev,u8 *dat,u16 wlength)
 u8 smart_connect(struct WIFI_Dev *dev)
 {
 	u16 s_timeout = 5;
+	u8 i = 0;
+	char *strx_b=0;
+	char *strx_p=0;	
 	// AT+CWSMARTSTART  启用智能连接
 	
 		//Sys_delay_ms(1000);
@@ -242,6 +265,7 @@ u8 smart_connect(struct WIFI_Dev *dev)
 			break;
 			
 		}
+		SysTickDelay_ms(300);
 	}
 	if(s_timeout == 0)
 		return 1;
@@ -256,7 +280,34 @@ u8 smart_connect(struct WIFI_Dev *dev)
 		{
 			__nop();
 			if(strstr((const char*)dev->databuf,"SMART SUCCESS"))
+			{
+				//SSID:
+				strx_b = strstr((const char*)dev->databuf,"SSID:");
+				strx_p = strstr((const char*)dev->databuf,"PASSWORD:");
+				if(strx_b != NULL)
+				{
+					for(i=0;i<32;i++)
+					{
+						SSID[i] = *(strx_b+5+i);
+						if((*(strx_b+5+i) == 0x0d)&&(*(strx_b+5+i+1) == 0x0a))
+						{
+							SSID[i] = 0;
+							break;
+						}
+					}
+					for(i=0;i<64;i++)
+					{
+						ssid_pwd[i] = *(strx_p+9+i);
+						if((*(strx_p+9+i) == 0x0d)&&(*(strx_p+9+i+1) == 0x0a))
+						{
+							ssid_pwd[i] = 0;
+							break;
+						}
+					}
+				}		 
 				break;			
+			}
+			dev->idleflag = 0;
 		}
 	}
 	if(s_timeout == 0)
@@ -306,7 +357,7 @@ int wifi_tcp_rec_pro(u8 *recbuf,u16 wLen)
 		ucHeadSum += recbuf[i];
 	if(ucHeadSum != recbuf[headstart+7])
 		return -1;
-	tMsg.wMsgType = MSG_TYPE_RECV_WIFI_TCP;
+	tMsg.wMsgType = MSG_TYPE_WIFI;
 	memcpy((u8*)tMsg.Data,&recbuf[headstart],wLen-headstart);
 	wMsgLen = ptRecvMsg->wLen[0] + (ptRecvMsg->wLen[1]<<8);	
     ptRecvMsg->wDataCrc[0] = tMsg.Data[wMsgLen+MSG_HEADSIZE-2];
@@ -366,8 +417,7 @@ void CycleBufPro(void)
 void wifi_fsm(void)
 {
 	u16 wifi_Status;
-	static u16 firstsendflag = 0;
-	static u16 heartticks = 0;
+ 
 	struct WIFI_Dev *pWifiDev = GetWifiDev();
 	T_MSG_RESP tRespMsg; 
 	wifi_Status = pWifiDev->GetConnetStatus(pWifiDev);
@@ -417,7 +467,7 @@ void wifi_fsm(void)
 			if((heartticks & 0x07 ) == 0)
 				wifi_get_tcp_status(pWifiDev);		
 			heartticks++;
-			if(heartticks > 50)
+			if(heartticks > 30)
 			{
 				heartticks = 0;
 				firstsendflag = 0;
@@ -432,7 +482,7 @@ void wifi_fsm(void)
 				tRespMsg.ucCmd = DEVICEID_INQUIRE;
 				memcpy((u8*)&tRespMsg.Data[0],(u8*)gMcuID,12);
 				memcpy((u8*)&tRespMsg.Data[12],gWifi_mac ,18);
-				MsgPackage(&tRespMsg,1);
+				MsgPackage(&tRespMsg,MSG_TYPE_WIFI);
 			} 
 			break;
 		case WIFI_RESTORE:
@@ -445,164 +495,4 @@ void wifi_fsm(void)
 	
 	
 	
-}
-
-int DealMsg(T_MSG *msg)
-{
-	struct WIFI_Dev *pDev = GetWifiDev();
-	
-	T_MSG_RECV *ptRecvMsg;
-	T_MSG_RESP tRespMsg; 
- 
- 
-
-	//ParameterStruct tGetPar;
-	//DateTime tTime;
-	//GetSetedPar(&tGetPar);
-	ptRecvMsg = (T_MSG_RECV *)&msg->Data[0]; 
-	switch(ptRecvMsg->ucCmd)
-	{
-		case MCU_RESET:
-			RestartMCU();
-			break;
-		case WIFI_SOFT_RESET:
-			pDev->ResetDev(pDev,1);
-			break;
-		case WIFI_HARD_RESET:
-			pDev->ResetDev(pDev,0);
-			break;
-		case OPEN_USB_OUTPUT:
-			 
-			UsbOutContrl(1);
-			break;
-		case CLOSE_USB_OUTPUT:
-			 
-			UsbOutContrl(0);
-			break;
-		case CHECKOUT:
-			 
-			gDeviceStaDataUp.CallSta = 2;
-			break;
-		case DEVICEID_INQUIRE:
-			tRespMsg.wLen[0] =12+18+2;//
-			tRespMsg.wLen[1] = 0x00;
-			tRespMsg.ucCmd = DEVICEID_INQUIRE;
-			memcpy((u8*)&tRespMsg.Data[0],(u8*)gMcuID,12);
-			memcpy((u8*)&tRespMsg.Data[12],gWifi_mac ,18);
-			break;		
-		case DEVICE_STATUS_INQUIRE:
-			tRespMsg.wLen[0] =8+2;//
-			tRespMsg.wLen[1] = 0x00;
-			tRespMsg.ucCmd = DEVICE_STATUS_INQUIRE;
-			memcpy((u8*)&tRespMsg.Data[0],(u8*)&gDeviceStaDataUp,sizeof(gDeviceStaDataUp));			
-			break;
- 
-		default:
-			break;
-	}	
-	if((ptRecvMsg->ucCmd == DEVICEID_INQUIRE) || (ptRecvMsg->ucCmd == DEVICE_STATUS_INQUIRE))
-	{
-		MsgPackage(&tRespMsg,1);
-	}
-	else
-		MsgRSEPPackage(ptRecvMsg,1);
-	
-	
-	return 0;
-	
-}
-
-//	wlen = ptRespMsg->wLen[0] +(ptRespMsg->wLen[1]<<8);
-	//						Gprs_Write((unsigned char*)&tMsg.Data,13+wlen );
-int MsgRSEPPackage(T_MSG_RECV *ptdev,u8 type)//设置指令回复
-{ 
-	
-	u16 wlen; 	 
-	struct WIFI_Dev *pDev = GetWifiDev();
-	T_MSG tMsg;
-	T_MSG_RESP *tRespMsg = (T_MSG_RESP *)&tMsg.Data[0];
- 
-	
- 	
-	memset(tRespMsg->AntiInterHead, 0xaa, 2); 
-	memset(tRespMsg->SyncHead, 0xc0, 3); 
- 
-	memcpy(tRespMsg->wDeviceID,ptdev->wDeviceID,8);	
-	wlen = tRespMsg->wLen[0] + (tRespMsg->wLen[1]<<8);
-	if(wlen > 2)
-	{
-		memcpy(tRespMsg->Data,ptdev->Data,wlen-2);
-		tRespMsg->Data[wlen-2] = ptdev->wDataCrc[0];
-		tRespMsg->Data[wlen-1] = ptdev->wDataCrc[1];
-		tRespMsg->wDataCrc[0] = ptdev->wDataCrc[0];
-		tRespMsg->wDataCrc[1] = ptdev->wDataCrc[1];
-	}
-	else
-	{
-		__nop();
-	}
-	tMsg.wMsgType = type;
-	if(pDev->wStatus == TCP_CONNECT_OK)
-	{
-		 
-		wifi_tcp_send(pDev,(unsigned char*)&tMsg.Data,13+wlen );
-	 				 
-	}
-	
-	return 0;
-} 
-int MsgPackage(T_MSG_RESP *ptRespMsg,const u8 type ) 
-{ 
-	//struct GPRS_DEV *pDev = GetGprsDev();
-	static u8 ucSerNum = 0;
-	u8	ucCheckSum;
-	u8 CRCDATATemp[2];
-	u16 i,wLen; 
-	T_MSG tMsg;
-	
-	u8* pCheck = (u8*)&ptRespMsg->wDeviceID;	
-	struct WIFI_Dev *pDev = GetWifiDev(); 	
-	
-	 
-	//u32 dwGprsStatus = 0;
-	ucSerNum++;
-//	Gprs_GetConnectStatus(&dwGprsSt atus);
-	memset(ptRespMsg->AntiInterHead, 0xaa, 2); 
-	memset(ptRespMsg->SyncHead, 0xc0, 3); 
-	ptRespMsg->wDeviceID[0] = 0;			
-	ptRespMsg->wDeviceID[1] = 0; 	
-	ptRespMsg->ucSerial = ucSerNum;
-	ptRespMsg->ucFuc = 0;
-	ucCheckSum = 0;
-	for(i=0;i<7;i++)
-		ucCheckSum += *pCheck++;
-	ptRespMsg->ucHeadSum = ucCheckSum;
-	wLen = ptRespMsg->wLen[0] + (ptRespMsg->wLen[1]<<8);
- 
-	if(wLen>2)
-	{
-		if((MSG_ALL_HEADSIZE+wLen)> MSG_MAXSIZE)
-			return -1;
-		CRC16(ptRespMsg->Data,wLen-2,CRCDATATemp);
-		ptRespMsg->wDataCrc[0]= CRCDATATemp[0];
-		ptRespMsg->wDataCrc[1]= CRCDATATemp[1];
-		ptRespMsg->Data[wLen-2] = CRCDATATemp[0];
-		ptRespMsg->Data[wLen-1] = CRCDATATemp[1];
-		memset((u8*)&tMsg,0,sizeof(tMsg));
-		memcpy(tMsg.Data,ptRespMsg->AntiInterHead,MSG_ALL_HEADSIZE+wLen);
-		
-	}
-	else
-	{
-		memcpy(tMsg.Data,ptRespMsg->AntiInterHead,MSG_ALL_HEADSIZE);
-		
-	}
-	tMsg.wMsgType = type;	
-	if(pDev->wStatus == TCP_CONNECT_OK)
-	{
-		 
-		wifi_tcp_send(pDev,(unsigned char*)&tMsg.Data,13+wLen );
-	 				 
-	}
-	return 0;
 }

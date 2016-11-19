@@ -14,7 +14,7 @@
 #include "wifi_esp_config.h"
 #include <string.h>
 BUTTON_T gtButtonUp,gtButtonDown,gtButtonLeft,gtButtonRight;
-
+extern T_DATA_UP gDeviceStaDataUp;
 //typedef struct
 //{
 //        /* 下面是一个函数指针，指向判断按键手否按下的函数 */
@@ -484,7 +484,7 @@ void ButtonsConfig(void)
 	Buttons_IOConfig();
 	TimerButtonsConfig(99,7199);
 }
-
+extern u8 lcd_page;
 void TIM3_IRQHandler(void)
 {
 	 
@@ -500,39 +500,65 @@ void TIM3_IRQHandler(void)
 		gtButtonDown.KeyState	= key_down_read();
 		gtButtonLeft.KeyState	= key_left_read();
 		gtButtonRight.KeyState	= key_right_read();
-		
+		//ButtonUp 		作为呼叫 复位键
 		switch(gtButtonUp.KeyState)
 		{
-			case N_key:
+			case N_key:				
 				break;
-			case S_key:
-				
+			case S_key:	
+				gDeviceStaDataUp.CallSta = 0;
 				break;
-			case D_key:
-				
+			case D_key:				
 				break;
-			case L_key:
-			//	LED9_Toggle;  
+			case L_key:			  
 				break;
 			default:
 				break; 
 		}
-		switch(gtButtonLeft.KeyState)
+		//ButtonDown 作为呼叫键
+		switch(gtButtonDown.KeyState)
 		{
 			case N_key:
 				break;
-			case S_key:
-				
+			case S_key:	
+				gDeviceStaDataUp.CallSta = 1;
 				break;
-			case D_key:
-				
+			case D_key:				
 				break;
 			case L_key:
-				pWifiDev->wStatus = WIFI_SMART_LINK;  
 				break;
 			default:
 				break; 
 			
+		}
+		switch(gtButtonLeft.KeyState)
+		{
+			case N_key:				
+				break;
+			case S_key:
+				lcd_page = (++lcd_page)&0x01;
+				break;
+			case D_key:				
+				break;
+			case L_key:	
+				pWifiDev->wStatus = WIFI_SMART_LINK;  
+				break;
+			default:
+				break; 
+		}
+		switch(gtButtonRight.KeyState)
+		{
+			case N_key:
+				break;
+			case S_key:
+				lcd_page = (++lcd_page)&0x01;
+				break;
+			case D_key:				
+				break;
+			case L_key:				 
+				break;
+			default:
+				break; 			
 		}
 		
     }
@@ -540,19 +566,19 @@ void TIM3_IRQHandler(void)
 }
 
 
-void EXTI1_IRQHandler(void)
-{
-	//Sys_delay_ms(10);    //消抖
- 
-//	EXTI_ClearITPendingBit( );  //清除EXTI0线路挂起位
-}
- 
+//void EXTI1_IRQHandler(void)
+//{
+//	//Sys_delay_ms(10);    //消抖
+// 
+////	EXTI_ClearITPendingBit( );  //清除EXTI0线路挂起位
+//}
+// 
 
-void EXTI15_10_IRQHandler(void)
-{
- 
-	
-}
+//void EXTI15_10_IRQHandler(void)
+//{
+// 
+//	
+//}
 void SysStaCheck(void)
 {
 	 

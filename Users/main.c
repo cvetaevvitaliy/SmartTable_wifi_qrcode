@@ -53,7 +53,7 @@ int main(void)
 	
 	SysTickDelay_ms(2000);
 	Lcd_Init();
-	DISPLAY_Temp( );
+//	DISPLAY_Temp( );
 	UsbOutConfig();
 	while(1)
 	{
@@ -87,12 +87,23 @@ int main(void)
 		else
 		{
 			page_ticks++;
-			if((page_ticks & 0x7F) == 0)
+			if((page_ticks & 0x1F) == 0)
 			{
-				DISPLAY_Temp();
+				page_ticks = 0;
+				switch(lcd_page)
+				{
+					case 0:
+						DISPLAY_RENCODE_TO_TFT("www.baidu.com");
+					break;
+					case 1:
+						DISPLAY_Temp( );
+					break;
+					default:
+						break;
+				}
 			}
 		}
-		//DISPLAY_RENCODE_TO_TFT("123");
+		
 	}
 }
 void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data)
@@ -144,11 +155,10 @@ void DISPLAY_RENCODE_TO_TFT(u8 *qrcode_data)
 void DISPLAY_Temp(void)
 {
 	u8 buff[32];
-	sprintf((char*)buff,"tempture:%d",Temp);
+	sprintf((char*)buff,"tempture:%.1f C",(Temp*0.1));
 	Lcd_Clear(GRAY0);
-
 	Gui_DrawFont_GBK16(16,10,BLUE,GRAY0, buff);
-	sprintf((char*)buff,"humidity:%d",Humi);	
+	sprintf((char*)buff,"humidity:%.1f",(Humi*0.1));	
 	Gui_DrawFont_GBK16(16,42,BLUE,GRAY0, buff);
 }
 /**
@@ -165,5 +175,5 @@ PUTCHAR_PROTOTYPE
 	//等待发送完毕
 	while(USART_GetFlagStatus(USART1, USART_FLAG_TC)==RESET) { }
 	//返回ch
-  return ch;
+	return ch;
 }

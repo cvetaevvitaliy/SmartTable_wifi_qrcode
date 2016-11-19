@@ -28,9 +28,8 @@
 u8 smart_connect(struct WIFI_Dev *dev);
 void wifi_fsm(void);
 void CycleBufPro(void);
-int DealMsg(T_MSG *msg);
+ 
 u8 wifi_tcp_send(struct WIFI_Dev *dev,u8 *dat,u16 wlength);
 
-int MsgPackage(T_MSG_RESP *ptRespMsg,const u8 type );
-int MsgRSEPPackage(T_MSG_RECV *ptdev,u8 type);
+ 
 #endif

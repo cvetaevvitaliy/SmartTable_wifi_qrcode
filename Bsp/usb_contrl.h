@@ -13,5 +13,5 @@
 
 
 void UsbOutConfig(void );
-
+void UsbOutContrl(u8 flag);
 #endif

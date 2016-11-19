@@ -143,7 +143,7 @@ void filter(void)
 	adc_filter[2] = (u16) (sum3/(AD_BUFSIZE/3)) ;
 	gI_UsbOut = (u16)(adc_filter[0]*66*1000/4096);  // usb 输出电流 单位 mA
 	gV_Battery = (u16)(adc_filter[1]*33*(75+49.9)/(4096*49.9));   // 电池电压  0.1V
-	gGas  = (u16)(4096*100/test_tgs);
+	gGas  = (u16)((4095/(test_tgs*1.1))*100-160)>>1;  //  (Rs/Ro)*100
 	//  Temperature = (1.42 - adc_filter[1]*3.3/4096)*1000/4.35 + 25;
 	//   adc_filter[2] = (u16) (sum3/(AD_BUFSIZE));
 
