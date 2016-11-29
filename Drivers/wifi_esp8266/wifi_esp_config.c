@@ -8,6 +8,7 @@
 #include "bsp_leds.h"
 #include "usb_contrl.h"
 #include "msg.h"
+#include "printf_em.h"
 T_DATA_UP gDeviceStaDataUp;
 u8 SSID[32];
 u8 ssid_pwd[64];
@@ -49,13 +50,17 @@ u8 wifi_get_gmr(struct WIFI_Dev *dev)
 u8 wifi_get_ap(struct WIFI_Dev *dev)
 {
 	char strbuf[128];
+	static char err_time = 0;
 	//AT+CWJAP?
 	if(dev->SendCmd(dev,"AT+CWJAP?\r\n\0","No AP",3) == 0)
 	{
 		//  连入 ap
+		err_time++;
 		//AT+ CWJAP =<ssid>,< password>
+		em_printf("no ap\r\n");
 		if(strlen((char*)SSID) > 0)
 		{
+			em_printf("join in the ssid from inter flash\r\n");
 			//sprintf(strbuf,"AT+CWJAP=\"s%\",\"s%\"",SSID,ssid_pwd);
 			strcat(strbuf,"AT+CWJAP=\"");
 			strcat(strbuf, (char*)SSID);
@@ -70,6 +75,12 @@ u8 wifi_get_ap(struct WIFI_Dev *dev)
 		}
 		else
 			dev->wStatus = WIFI_CHECK_AP;		 
+		if(err_time > 0x10)
+		{
+			err_time = 0;
+			em_printf("restart wifi by at commond\r\n");
+			dev->wStatus = WIFI_AT_RST;
+		}
 		return 1;
 	}
 	else
@@ -244,7 +255,7 @@ u8 wifi_tcp_send(struct WIFI_Dev *dev,u8 *dat,u16 wlength)
   * @param  WIFI_Dev
   * @retval 0 success   other  failure
   */
-u8 smart_connect(struct WIFI_Dev *dev)
+u8 smart_connect(struct WIFI_Dev *dev,u8 smart_type)
 {
 	u16 s_timeout = 5;
 	u8 i = 0;
@@ -261,6 +272,7 @@ u8 smart_connect(struct WIFI_Dev *dev)
 		if(dev->SendCmd(dev,"AT+CWSMARTSTART=0\r\n\0","OK",2) == 0)
 		{
 			//启动成功
+			em_printf("smart ok \r\n");
 			__nop();
 			break;
 			
@@ -270,7 +282,7 @@ u8 smart_connect(struct WIFI_Dev *dev)
 	if(s_timeout == 0)
 		return 1;
 	// 等待数据
-	s_timeout = 300;
+	s_timeout = 100;
 	while(s_timeout--)
 	{
 		//
@@ -282,6 +294,7 @@ u8 smart_connect(struct WIFI_Dev *dev)
 			if(strstr((const char*)dev->databuf,"SMART SUCCESS"))
 			{
 				//SSID:
+				em_printf("smart success \r\n");
 				strx_b = strstr((const char*)dev->databuf,"SSID:");
 				strx_p = strstr((const char*)dev->databuf,"PASSWORD:");
 				if(strx_b != NULL)
@@ -316,7 +329,7 @@ u8 smart_connect(struct WIFI_Dev *dev)
 		if(dev->SendCmd(dev,"AT+CWSMARTSTOP\r\n\0","OK",2) != 0)
 		{
 			// 
-			
+			em_printf("smart fail \r\n");
 			return 1;
 			
 		}
@@ -382,6 +395,7 @@ void CycleBufPro(void)
 			pStr = strstr((const char*)pDev->rec_buf,"+IPD,");
 			if(pStr != 0)
 			{
+				em_printf("receive data from tcp\r\n");
 				pStr = pStr+5;
 				for(i=0; i<4; i++)
 				{
@@ -451,7 +465,8 @@ void wifi_fsm(void)
 			wifi_get_ap_mac(pWifiDev);
 			break;
 		case WIFI_SMART_LINK:
-			smart_connect(pWifiDev);
+			em_printf("entry smart link using smart 安信可 AI-LINK技术  \r\n");
+			smart_connect(pWifiDev,0);
 			pWifiDev->wStatus = WIFI_CHECK_AP;
 			break;
 		case WIFI_CHECK_AP:

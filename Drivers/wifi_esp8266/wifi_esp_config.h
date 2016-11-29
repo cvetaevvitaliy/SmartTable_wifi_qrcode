@@ -25,7 +25,7 @@
 #define TCP_STATUS_OFF_TCP  	0X0004
 #define TCP_STATUS_NO_WIFI		0X0005
 
-u8 smart_connect(struct WIFI_Dev *dev);
+u8 smart_connect(struct WIFI_Dev *dev,u8 smart_type);
 void wifi_fsm(void);
 void CycleBufPro(void);
  

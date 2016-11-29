@@ -55,11 +55,11 @@ void TIM4_Set(u8 sta)
 {
 	if(sta)
 	{       
-		TIM_Cmd(TIM4, ENABLE);  //??TIMx	
-		TIM_SetCounter(TIM4,0);//?????
-	}else TIM_Cmd(TIM4, DISABLE);//?????4	   
+		TIM_Cmd(TIM4, ENABLE);  // TIMx	
+		TIM_SetCounter(TIM4,0);// 
+	}else TIM_Cmd(TIM4, DISABLE);//    
 }
-//??????????
+// 
  
 void TIM4_Init(u16 time_ms)
 {	

@@ -3,7 +3,7 @@
 #include "stm32f10x.h"
 #include "sys_tick_delay.h"
 //#include "log.h"
-//#include "printf_embedded.h" 
+ 
 #include "encryption.h"
 #include "Savepartoflash.h"
 
@@ -38,24 +38,10 @@
 //#define ENBALE_GAS_POWER    	GPIO_SetBits(GPIOA,GPIO_Pin_3)
 //#define DISABLE_GAS_POWER    	GPIO_ResetBits(GPIOA,GPIO_Pin_3)
 
-#define SysRunTicks 	PDInit_GetSysTick()
-#define SecondTicks 	((u16)(PDInit_GetSysTick()/2000))
+ 
 //#define SecondTicks (uint16)RTC_GetCounter()
 //#define PosBKPAddr BKP_DR2
-typedef struct _DATA_STRUCT
-{
-	u16 wSendCounter;
-	s16 wTemperature;
-	u16 wHumidity;
-	u16 wAt_pressure ;
-	u16 wPM25;		 
-	u16 wPM10;
-	u16 wGas;
-	u16 wRecCounter;
-	u16 wBackup0;
-	u16 wBackup1;
-	
-}T_DATA_TRANS;
+ 
  void POWERD_init(void);
  void RCC_Configuration(void);
  void PortInit_All(void);

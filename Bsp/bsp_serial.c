@@ -1,5 +1,6 @@
 #include "stm32f10x.h"
 #include "msg.h"
+#include "bsp_serial.h"
 #define BSP_USART  				USART1
 #define BSP_USART_DMA_CHANNEL	DMA1_Channel5
 #define BSP_RECBUFSIZE			64
@@ -16,13 +17,16 @@ struct BSP_Ser
  	//u16 wStatus; 
 };
 struct BSP_Ser tBspSer;
+void bsp_serial_dma(void);
+
+
 void bsp_serial_config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure; 
 	NVIC_InitTypeDef NVIC_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_AFIO|RCC_APB2Periph_USART1 , ENABLE );
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_USART1|RCC_APB2Periph_AFIO , ENABLE );
 	 
 	GPIO_InitStructure.GPIO_Pin=GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
@@ -41,7 +45,7 @@ void bsp_serial_config(void)
 	/********
 	*波特率 
 	************/
-	USART_InitStructure.USART_BaudRate            = 115200  ;    
+	USART_InitStructure.USART_BaudRate            = 9600  ;    
 	USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits            = USART_StopBits_1;
 	USART_InitStructure.USART_Parity              = USART_Parity_No ;
@@ -55,7 +59,7 @@ void bsp_serial_config(void)
 	USART_ITConfig(BSP_USART, USART_IT_IDLE, ENABLE);
 	USART_ClearFlag(BSP_USART,USART_FLAG_TC);
 			
-	
+	bsp_serial_dma();
 	
 	
 }
@@ -63,7 +67,7 @@ void bsp_serial_dma(void)
 {
 	DMA_InitTypeDef DMA_InitStructure; 
 	//NVIC_InitTypeDef NVIC_InitStructure;
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 , ENABLE); 
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 , ENABLE); 
  
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 //	 
@@ -97,12 +101,12 @@ void bsp_serial_dma(void)
 
 void USART1_IRQHandler(void)
 {
- 	//u8 ucDat;
+ 	u8 ucDat;
 	u16 temp;
     /* 中断接收*/
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) 
-    {
-      //  ucDat = USART_ReceiveData(USART1);   
+    { 
+		ucDat = USART_ReceiveData(USART1);   
 //		g_Usart3RecStr.buf[g_Usart3RecStr.wWritePos++] = ucDat;
 //		if(g_Usart3RecStr.wWritePos == USART3_BUFSIZE)
 //		{
